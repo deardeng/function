@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
@@ -13,7 +14,10 @@ import (
 	"golang.org/x/text/transform"
 )
 
+var rateLimiter = time.Tick(2 * time.Second)
+
 func Fetch(url string) ([]byte, error) {
+	<-rateLimiter
 	//resp, err := http.Get(url)
 	//
 	//if err != nil {
@@ -27,7 +31,7 @@ func Fetch(url string) ([]byte, error) {
 	if err != nil {
 		panic(err)
 	}
-	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36")
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.100 Safari/537.36")
 
 	// 模拟客户端获取url请求
 	resp, err := http.DefaultClient.Do(request)

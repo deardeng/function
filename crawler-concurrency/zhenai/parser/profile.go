@@ -2,8 +2,8 @@ package parser
 
 import (
 	"encoding/json"
-	"function/crawler/engine"
-	"function/crawler/zhenai/model"
+	"function/crawler-concurrency/engine"
+	"function/crawler-concurrency/zhenai/model"
 	"log"
 	"regexp"
 )

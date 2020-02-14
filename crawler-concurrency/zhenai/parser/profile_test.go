@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"function/crawler/zhenai/model"
+	"function/crawler-concurrency/zhenai/model"
 	"io/ioutil"
 	"testing"
 )
