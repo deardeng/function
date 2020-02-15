@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"function/crawler-concurrency/fetcher"
+	"function/crawler-concurrency-queue/fetcher"
 	"log"
 )
 
