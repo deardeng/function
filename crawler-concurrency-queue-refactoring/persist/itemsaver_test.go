@@ -1,22 +1,15 @@
-package parser
+package persist
 
 import (
+	"context"
+	"encoding/json"
 	"function/crawler-concurrency-queue-refactoring/engine"
-	"function/crawler-concurrency/zhenai/model"
-	"io/ioutil"
+	"function/crawler-concurrency-queue-refactoring/zhenai/model"
+	"github.com/olivere/elastic"
 	"testing"
 )
 
-func TestParseProfile(t *testing.T) {
-	contents, err := ioutil.ReadFile("profile_test_data.html")
-	if err != nil {
-		panic(err)
-	}
-
-	result := ParseProfile(contents, "https://album.zhenai.com/u/1111145895", "有缘会相识")
-
-	actual := result.Items[0]
-
+func TestItemSave(t *testing.T) {
 	profile := model.Profile{
 		Name:             "有缘会相识",
 		Gender:           "女士",
@@ -41,13 +34,40 @@ func TestParseProfile(t *testing.T) {
 		Payload: profile,
 	}
 
-	if actual.Url != expected.Url {
-		t.Errorf("expected %v, but was %v", expected, profile)
+	// todo: try to start up elastic search
+	// here using docker go client
+	client, err := elastic.NewClient(elastic.SetSniff(false))
+	if err != nil {
+		panic(err)
 	}
 
-	//for i, v := range profile.DetailInfo {
-	//	if v != expected.Payload.DetailInfo[i] {
-	//		t.Errorf("expected %v, but was %v", expected, profile)
-	//	}
-	//}
+	const index = "dating_test"
+
+	// save expected item
+	err = save(client, index, expected)
+	if err != nil {
+		panic(err)
+	}
+
+	// fetch saved item
+	do, err := client.Get().Index(index).Type(expected.Type).Id(expected.Id).Do(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	t.Logf("%s", do.Source)
+
+	var actual engine.Item
+	err = json.Unmarshal(do.Source, &actual)
+	if err != nil {
+		panic(err)
+	}
+
+	actualProfile, _ := model.FromJsonObj(actual.Payload)
+	actual.Payload = actualProfile
+
+	// verity result
+	if actual.Url != expected.Url {
+		t.Errorf("got %v; expected %v", actual, profile)
+	}
 }

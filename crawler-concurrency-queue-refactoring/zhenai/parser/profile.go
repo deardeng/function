@@ -9,6 +9,7 @@ import (
 )
 
 var infoRe = regexp.MustCompile(`window.__INITIAL_STATE__=({.*});`)
+var idUrlRe = regexp.MustCompile(`http://album.zhenai.com/u/([\d]+)`)
 
 type UserInfo struct {
 	ObjectInfo        ObjectInfo   `json:"objectInfo"`
@@ -154,7 +155,7 @@ type SeoInfo struct {
 	NearbyCitys []NearbyCitys `json:"nearbyCitys"`
 }
 
-func ParseProfile(contents []byte, name string) engine.ParseResult {
+func ParseProfile(contents []byte, url, name string) engine.ParseResult {
 	profile := model.Profile{}
 	profile.Name = name
 
@@ -187,6 +188,29 @@ func ParseProfile(contents []byte, name string) engine.ParseResult {
 	profile.Height = result.ObjectInfo.HeightString
 	profile.Age = result.ObjectInfo.Age
 
-	ret.Items = []interface{}{profile}
+	ret.Items = []engine.Item{
+		{
+			Url:     url,
+			Type:    "zhenai",
+			Id:      extractString([]byte(url), idUrlRe),
+			Payload: profile,
+		},
+	}
 	return ret
+}
+
+func extractString(contents []byte, re *regexp.Regexp) string {
+	match := re.FindSubmatch(contents)
+
+	if len(match) >= 2 {
+		return string(match[1])
+	} else {
+		return ""
+	}
+}
+
+func ProfileParser(name string) engine.ParserFunc {
+	return func(c []byte, url string) engine.ParseResult {
+		return ParseProfile(c, url, name)
+	}
 }

@@ -11,16 +11,14 @@ func TestParseCityUserList(t *testing.T) {
 		panic(err)
 	}
 
-	result := ParseCityUserList(content)
-	const resultSize = 20
+	result := ParseCityUserList(content, "")
+	const resultSize = 96
 
 	expectedUrls := []string{
 		"http://album.zhenai.com/u/1921187162",
 		"http://album.zhenai.com/u/1002520123",
 		"http://album.zhenai.com/u/1133630423",
 	}
-
-	expectedUsers := []string{}
 
 	//fmt.Println(result)
 
@@ -34,13 +32,4 @@ func TestParseCityUserList(t *testing.T) {
 		}
 	}
 
-	if len(result.Items) != resultSize {
-		t.Errorf("result should have %d requests; but had %d", resultSize, len(result.Items))
-	}
-
-	for i, user := range expectedUsers {
-		if result.Items[i].(string) != user {
-			t.Errorf("expected url #%d: %s; but was %s", i, user, result.Items[i].(string))
-		}
-	}
 }
