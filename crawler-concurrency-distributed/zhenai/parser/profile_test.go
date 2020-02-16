@@ -13,7 +13,7 @@ func TestParseProfile(t *testing.T) {
 		panic(err)
 	}
 
-	result := ParseProfile(contents, "https://album.zhenai.com/u/1111145895", "有缘会相识")
+	result := parseProfile(contents, "https://album.zhenai.com/u/1111145895", "有缘会相识")
 
 	actual := result.Items[0]
 
