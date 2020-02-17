@@ -10,7 +10,6 @@ const (
 	ItemSaverRPC    = "ItemSaverService.Save"
 	CrawlServiceRpc = "CrawlService.Process"
 	ItemSaverPort   = 1234
-	WorkerPort      = 9000
 
 	// Rate limiting
 	Qps = 20
